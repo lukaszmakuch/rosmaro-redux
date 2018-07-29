@@ -1,7 +1,7 @@
 {
   "name": "rosmaro-redux",
   "version": "0.0.1",
-  "description": "Integrates Rosmaro, Redux and Redux-Saga.",
+  "description": "Connects Rosmaro, Redux and Redux-Saga.",
   "main": "dist/index.js",
   "scripts": {
     "test": "npx jest --watch",
