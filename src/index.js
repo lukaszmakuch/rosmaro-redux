@@ -1,38 +1,31 @@
-export const makeReducer = rosmaroModel => 
-  (stateAndEffect = {state: undefined, effect: undefined}, action) => {
-    if (action.type === 'EFFECT') {
-      return {state: stateAndEffect.state, effect: undefined};
+export const isEffect = effect => effect.isARosmaroEffect;
+const markAsEffect = effect => ({...effect, isARosmaroEffect: true});
+
+export const makeReducer = model => (
+  {state, effect} = {state: undefined, effect: undefined}, 
+  action
+) => {
+  if (isEffect(action)) {
+    return {state, effect: undefined};
+  }
+
+  const {
+    state: newState,
+    result: {effect: newEffect}
+  } = model({state, action});
+  return {state: newState, effect: newEffect};
+};
+
+export const effectDispatcher = ({getState, dispatch}) => next => action => {
+  const result = next(action);
+  const {effect} = getState();
+  if (effect) {
+    if (Array.isArray(effect)) {
+      effect.forEach(e => dispatch(markAsEffect(e)))
+    } else {
+      dispatch(markAsEffect(effect));
     }
-
-    const {
-      state: newState,
-      result: {effect}
-    } = rosmaroModel({
-      state: stateAndEffect.state,
-      action
-    });
-    return {state: newState, effect};
-  };
-
-const flattenEffects = effect => {
-  if (Array.isArray(effect)) {
-    return effect.reduce(
-      (flat, effects) => [...flat, ...flattenEffects(effects)], 
-      []
-    );
-  } else {
-    return [effect];
   }
-};
 
-export const emitter = emit => action => {
-  if (action.type === 'EFFECT') {
-    flattenEffects(action.effect).forEach(emit);
-  }
-};
-
-export const effectDispatcher = store => next => action => {
-  next(action);
-  const {effect} = store.getState();
-  if (effect) store.dispatch({type: 'EFFECT', effect});
+  return result;
 };

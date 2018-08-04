@@ -17,49 +17,40 @@ npm i rosmaro-redux
 
 Then, all the dependencies need to be imported into the same file, where the Redux store is built:
 ```javascript
-import {makeReducer, effectDispatcher, emitter} from 'rosmaro-redux';
+import {makeReducer, effectDispatcher} from 'rosmaro-redux';
 ```
 
 Let's assume that `rosmaroModel` is a Rosmaro model, that is a `({state, action}) => ({state, result})` function. Then the reducer is built in the following way:
 ```javascript
-import {makeReducer, effectDispatcher, emitter} from 'rosmaro-redux';
+import {makeReducer, effectDispatcher} from 'rosmaro-redux';
 
-const rootReducer = makeReducer(rosmaroModel);
-```
-
-We must provide a special emmiter to the Redux-Saga middleware:
-```javascript
-import {makeReducer, effectDispatcher, emitter} from 'rosmaro-redux';
-import createSagaMiddleware from 'redux-saga';
-
-const rootReducer = makeReducer(rosmaroModel);
-const sagaMiddleware = createSagaMiddleware({emitter});
+const reducer = makeReducer(rosmaroModel);
 ```
 
 The store requires two middlewares:
 ```javascript
-import {makeReducer, effectDispatcher, emitter} from 'rosmaro-redux';
+import {makeReducer, effectDispatcher} from 'rosmaro-redux';
 import createSagaMiddleware from 'redux-saga';
 import {createStore, applyMiddleware} from 'redux';
 
-const rootReducer = makeReducer(rosmaroModel);
-const sagaMiddleware = createSagaMiddleware({emitter});
+const reducer = makeReducer(rosmaroModel);
+const sagaMiddleware = createSagaMiddleware();
 const store = createStore(
-  rootReducer,
+  reducer,
   applyMiddleware(effectDispatcher, sagaMiddleware)
 );
 ```
 
 Assuming that `saga` is our saga, we run in in the following way:
 ```javascript
-import {makeReducer, effectDispatcher, emitter} from 'rosmaro-redux';
+import {makeReducer, effectDispatcher} from 'rosmaro-redux';
 import createSagaMiddleware from 'redux-saga';
 import {createStore, applyMiddleware} from 'redux';
 
-const rootReducer = makeReducer(rosmaroModel);
-const sagaMiddleware = createSagaMiddleware({emitter});
+const reducer = makeReducer(rosmaroModel);
+const sagaMiddleware = createSagaMiddleware();
 const store = createStore(
-  rootReducer,
+  reducer,
   applyMiddleware(effectDispatcher, sagaMiddleware)
 );
 sagaMiddleware.run(saga);
@@ -73,15 +64,15 @@ To make things easier, we can use the the `redux-devtools-extension` package:
 npm i redux-devtools-extension
 ```
 ```javascript
-import {makeReducer, effectDispatcher, emitter} from 'rosmaro-redux';
+import {makeReducer, effectDispatcher} from 'rosmaro-redux';
 import createSagaMiddleware from 'redux-saga';
 import {createStore, applyMiddleware} from 'redux';
 import {composeWithDevTools} from 'redux-devtools-extension';
 
-const rootReducer = makeReducer(rosmaroModel);
-const sagaMiddleware = createSagaMiddleware({emitter});
+const reducer = makeReducer(rosmaroModel);
+const sagaMiddleware = createSagaMiddleware();
 const store = createStore(
-  rootReducer,
+  reducer,
   composeWithDevTools(
     applyMiddleware(effectDispatcher, sagaMiddleware)
   )
@@ -94,12 +85,12 @@ For more information, please check [the official documentation of Redux DevTools
 ## How to write Rosmaro handlers
 
 Every [Rosmaro handler](https://rosmaro.js.org/doc/#bindings) is supposed to return a result in the shape of `{data, effect}`.
-While the `data` may be an arbitrary value, the `effect` needs to be either an an effect object recognized by the saga or an array of effect objects (or arrays of them).
+While the `data` may be an arbitrary value, the `effect` needs to be either an action recognized as an effect by the saga or an array of effects.
 This is a simple, valid result value:
 ```
 {data: undefined, effect: {type: 'INCREMENT', value: 42}}
 ```
-But also this is correct:
+This is correct as well:
 ```
 {
   data: undefined, 
@@ -116,3 +107,18 @@ But also this is correct:
 ```
 
 You may like the [rosmaro-binding-utils](https://github.com/lukaszmakuch/rosmaro-binding-utils) package. It makes returning a result in the shape of `{data, effect}` easy.
+
+## Redux-Saga - reacting only to effects
+This package exports a tiny predicate - `isEffect`.
+```javascript
+import {isEffect} from 'rosmaro-redux';
+```
+
+This functions returns `true` when it's given an action which was returned as an `effect`. That way we can distinguish actions simply dispatched to the store from actions returned as effects.
+
+Here's an example of taking only those `INCREMENT` actions which are effects:
+```
+import {isEffect} from 'rosmaro-redux';
+// ...
+yield takeEvery(action => isEffect(action) && action.type === 'INCREMENT', increment);
+```

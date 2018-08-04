@@ -1,7 +1,8 @@
-import {makeReducer, effectDispatcher, emitter} from './index';
+import {makeReducer, effectDispatcher, isEffect} from './index';
 import {createStore, applyMiddleware} from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import {put, takeEvery, all} from 'redux-saga/effects'
+const matchEffect = type => action => isEffect(action) && action.type === type;
 
 describe('rosmaro-redux', () => {
 
@@ -32,7 +33,7 @@ describe('rosmaro-redux', () => {
     };
 
     const watchIncrement = function* () {
-      yield takeEvery('INCREMENT', increment);
+      yield takeEvery(matchEffect('INCREMENT'), increment);
     };
 
      const saga = function* () {
@@ -43,7 +44,7 @@ describe('rosmaro-redux', () => {
 
     const rootReducer = makeReducer(rosmaroModel);
 
-    const sagaMiddleware = createSagaMiddleware({emitter});
+    const sagaMiddleware = createSagaMiddleware();
 
     const store = createStore(
       rootReducer,
@@ -67,13 +68,9 @@ describe('rosmaro-redux', () => {
               data: undefined,
               effect: [
                 {type: 'INCREMENT'},
-                [
-                  {type: 'INCREMENT'},
-                  {type: 'INCREMENT'},
-                  [
-                    {type: 'INCREMENT'},
-                  ]
-                ]
+                {type: 'INCREMENT'},
+                {type: 'INCREMENT'},
+                {type: 'INCREMENT'},
               ]
             }
           };
@@ -87,12 +84,12 @@ describe('rosmaro-redux', () => {
       }
     };
 
-    const increment = function* () {
+    const increment = function* (action) {
       yield put({type: 'ACTUALLY_INCREMENT'});
     };
 
     const watchIncrement = function* () {
-      yield takeEvery('INCREMENT', increment);
+      yield takeEvery(matchEffect('INCREMENT'), increment);
     };
 
      const saga = function* () {
@@ -103,7 +100,7 @@ describe('rosmaro-redux', () => {
 
     const rootReducer = makeReducer(rosmaroModel);
 
-    const sagaMiddleware = createSagaMiddleware({emitter});
+    const sagaMiddleware = createSagaMiddleware();
 
     const store = createStore(
       rootReducer,
