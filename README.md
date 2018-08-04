@@ -117,7 +117,7 @@ import {isEffect} from 'rosmaro-redux';
 This functions returns `true` when it's given an action which was returned as an `effect`. That way we can distinguish actions simply dispatched to the store from actions returned as effects.
 
 Here's an example of taking only those `INCREMENT` actions which are effects:
-```
+```javascript
 import {isEffect} from 'rosmaro-redux';
 // ...
 yield takeEvery(action => isEffect(action) && action.type === 'INCREMENT', increment);
