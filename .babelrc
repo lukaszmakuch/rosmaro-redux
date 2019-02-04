@@ -1,4 +1,8 @@
 {
-  "presets": ["env"],
+  "presets": [
+    ["env", {
+      "exclude": ["transform-regenerator"]
+    }]
+  ],
   "plugins": ["syntax-object-rest-spread", "transform-object-rest-spread"]
 }
