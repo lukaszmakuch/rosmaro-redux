@@ -1,6 +1,6 @@
 {
   "name": "rosmaro-redux",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Connects Rosmaro, Redux and Redux-Saga.",
   "main": "dist/index.js",
   "scripts": {
