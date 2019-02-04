@@ -122,3 +122,39 @@ import {isEffect} from 'rosmaro-redux';
 // ...
 yield takeEvery(action => isEffect(action) && action.type === 'INCREMENT', increment);
 ```
+
+It can be even shorter with `matchEffect`:
+```javascript
+import {matchEffect} from 'rosmaro-redux';
+// ...
+yield takeEvery(matchEffect('INCREMENT'), increment);
+```
+
+## Sagas
+
+### dispatchActionSaga
+
+This saga looks for `{type: 'DISPATCH', action}` effects and dispatches the `action`.
+
+```javascript
+import {dispatchActionSaga} from 'rosmaro-redux';
+
+// ...
+const saga = function* () {
+  yield all([dispatchActionSaga()]);
+};
+
+sagaMiddleware.run(saga);
+
+```
+Returning an effect like this:
+```javascript
+effect: {
+  type: "DISPATCH",
+  action: {type: "ACTUALLY_INCREMENT"}
+}
+```
+will make this saga dispatch:
+```javascript
+{type: "ACTUALLY_INCREMENT"}
+```

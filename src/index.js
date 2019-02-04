@@ -1,3 +1,5 @@
+import { takeEvery, put } from "redux-saga/effects";
+
 export const isEffect = effect => effect.isARosmaroEffect;
 const markAsEffect = effect => ({...effect, isARosmaroEffect: true});
 
@@ -29,3 +31,11 @@ export const effectDispatcher = ({getState, dispatch}) => next => action => {
 
   return result;
 };
+
+export const matchEffect = type => action => isEffect(action) && action.type === type;
+
+export const dispatchActionSaga = function* () {
+  yield takeEvery(matchEffect('DISPATCH'), function* ({ action }) {
+    yield put(action);
+  });
+}
