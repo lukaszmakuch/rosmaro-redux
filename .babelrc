@@ -1,8 +1,16 @@
 {
   "presets": [
-    ["env", {
-      "exclude": ["transform-regenerator"]
-    }]
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "entry",
+        "exclude": ["@babel/plugin-transform-regenerator"],
+        "targets": {
+          "browsers": "last 2 versions",
+          "node": "10.0.0",
+        }
+      }
+    ]
   ],
-  "plugins": ["syntax-object-rest-spread", "transform-object-rest-spread"]
+  "plugins": ["@babel/plugin-proposal-object-rest-spread"]
 }

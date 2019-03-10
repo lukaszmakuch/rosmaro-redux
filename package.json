@@ -1,6 +1,6 @@
 {
   "name": "rosmaro-redux",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Connects Rosmaro, Redux and Redux-Saga.",
   "main": "dist/index.js",
   "scripts": {
@@ -17,16 +17,15 @@
   ],
   "author": "Łukasz Makuch <kontakt@lukaszmakuch.pl> (https://lukaszmakuch.pl)",
   "license": "MIT",
-  "dependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-plugin-syntax-object-rest-spread": "^6.13.0",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-preset-env": "^1.4.0"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "jest": "^23.6.0",
-    "redux": "^4.0.0",
-    "redux-saga": "1.x.x"
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.4",
+    "@babel/preset-env": "^7.3.4",
+    "jest": "^24.3.1",
+    "redux": "^4.0.1",
+    "redux-saga": "^1.0.2"
   },
   "peerDependencies": {
     "redux-saga": "1.x.x"
